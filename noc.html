@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Report Converter -  & NOC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            display: flex;
+            min-height: 600px;
+        }
+        
+        .input-section, .output-section {
+            flex: 1;
+            padding: 25px;
+        }
+        
+        .input-section {
+            border-right: 2px dashed #e0e0e0;
+            background: #f8f9fa;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: #2366a8;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2366a8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+            background: white;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #2366a8;
+            box-shadow: 0 0 0 3px rgba(35, 102, 168, 0.1);
+        }
+        
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .convert-btn {
+            background: linear-gradient(135deg, #5a8f29 0%, #4a7f19 100%);
+            color: white;
+        }
+        
+        .convert-btn:hover {
+            background: linear-gradient(135deg, #4a7f19 0%, #3a6f09 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(90, 143, 41, 0.4);
+        }
+        
+        .clear-btn {
+            background: #f8f9fa;
+            color: #666;
+            border: 2px solid #ddd;
+        }
+        
+        .clear-btn:hover {
+            background: #e9ecef;
+            color: #333;
+        }
+        
+        .output-section {
+            position: relative;
+        }
+        
+        .output-area {
+            height: 400px;
+            overflow: auto;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: white;
+        }
+        
+        .action-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .copy-btn {
+            background: linear-gradient(135deg, #2366a8 0%, #1a4d8c 100%);
+            color: white;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #9c27b0 0%, #8c17a0 100%);
+            color: white;
+        }
+        
+        .copy-btn:hover, .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .preview-btn {
+            background: linear-gradient(135deg, #5a8f29 0%, #4a7f19 100%);
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .sample-data {
+            margin-top: 20px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .sample-data:hover {
+            background: #f0f7ff;
+            border-color: #2366a8;
+        }
+        
+        .sample-data h4 {
+            color: #2366a8;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .sample-text {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+            max-height: 80px;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .format-guide {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f0f7ff;
+            border-radius: 6px;
+            border-left: 4px solid #2366a8;
+        }
+        
+        .format-guide h5 {
+            color: #2366a8;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .format-guide ul {
+            padding-left: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .format-guide li {
+            margin-bottom: 3px;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            color: #2366a8;
+            border-bottom-color: #2366a8;
+            background: #f0f7ff;
+        }
+        
+        .tab-btn:hover {
+            background: #f5f5f5;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-shield-alt"></i> Security Report Converter</h1>
+            <p>Convert  & NOC text reports into professional HTML dashboards</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-section">
+                <div class="section-title">
+                    <i class="fas fa-keyboard"></i> Input Security Data
+                </div>
+                
+                <div class="format-guide">
+                    <h5><i class="fas fa-info-circle"></i> Supported Formats:</h5>
+                    <ul>
+                        
+                        <li><strong>NOC:</strong> 📊NETWORK OPERATION CENTER (NOC)</li>
+                        <li>All sections with 7 Years data</li>
+                    </ul>
+                </div>
+                
+                <textarea id="inputText" placeholder="Paste your security report text here...
+
+Example:
+
+📊NETWORK OPERATION CENTER (NOC)
+Log Management System (LMS)
+Feature	🌞Daily	🔄Weekly	🌙Monthly	⏱️Quarterly	🗓️Yearly
+🚨Emergency	0	0	0	0	0
+..."></textarea>
+                
+                <div class="button-group">
+                    <button class="convert-btn" onclick="convertToHTML()">
+                        <i class="fas fa-magic"></i> Convert to HTML
+                    </button>
+                    <button class="clear-btn" onclick="clearInput()">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                </div>
+                
+                <div class="sample-data" onclick="loadFullSampleData()">
+                    <h4><i class="fas fa-lightbulb"></i> Full Sample Data (Click to load)</h4>
+                    <div class="sample-text">
+
+📊NETWORK OPERATION CENTER (NOC)
+Log Management System (LMS)
+Feature	🌞Daily	🔄Weekly	🌙Monthly	⏱️Quarterly	🗓️Yearly
+🚨Emergency	0	0	0	0	0
+‼️Alert	0	1	1	9	22
+...                    </div>
+                </div>
+            </div>
+            
+            <div class="output-section">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="showTab('output')">HTML Output</button>
+                    <button class="tab-btn" onclick="showTab('preview')">Quick Preview</button>
+                </div>
+                
+                <div id="outputTab" class="tab-content active">
+                    <div class="section-title">
+                        <i class="fas fa-code"></i> Generated HTML Output
+                    </div>
+                    <div class="output-area" id="outputArea">
+                        <!-- Generated HTML will appear here -->
+                        <div style="text-align: center; padding: 50px; color: #999;">
+                            <i class="fas fa-file-code fa-3x"></i>
+                            <h3>HTML Output will appear here</h3>
+                            <p>Paste your security data and click "Convert to HTML"</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="previewTab" class="tab-content">
+                    <div class="section-title">
+                        <i class="fas fa-eye"></i> Quick Preview
+                    </div>
+                    <div class="output-area" id="previewArea">
+                        <div style="text-align: center; padding: 50px; color: #999;">
+                            <i class="fas fa-chart-bar fa-3x"></i>
+                            <h3>Preview will appear here</h3>
+                            <p>Convert data to see preview</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="copy-btn" onclick="copyHTML()">
+                        <i class="fas fa-copy"></i> Copy HTML
+                    </button>
+                    <button class="download-btn" onclick="downloadHTML()">
+                        <i class="fas fa-download"></i> Download HTML
+                    </button>
+                </div>
+                
+                <button class="preview-btn" onclick="previewHTML()">
+                    <i class="fas fa-external-link-alt"></i> Full Preview in New Tab
+                </button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><i class="fas fa-bolt"></i> Multi-Format Support | <i class="fas fa-shield-alt"></i> NOC | <i class="fas fa-sync"></i> Instant Conversion</p>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">Operation completed!</div>
+
+    <script>
+        // Full sample data with  and NOC sections
+        const fullSampleData = `📊NETWORK OPERATION CENTER (NOC)
+
+Log Management System (LMS)
+
+Feature	🌞Daily	🔄Weekly	🌙Monthly	⏱️Quarterly	🗓️Yearly
+🚨Emergency	0	0	0	0	0
+‼️Alert	0	1	1	9	22
+💥Critical	0	1	1	1	1
+❌Error	266	834	2607	2614	2614
+⚠️Warning	13668	40795	40795	40795	40795
+📊Total Logs	91088	227673	229446	229461	229474
+System Performance Mgmt (SPM)
+
+Feature	🌞Daily	🔄Weekly	🌙Monthly	⏱️Quarterly	🗓️Yearly
+🧑‍💼Agents	7	7	7	7	7
+🧠Critical Mem Usage	2	3	3	3	3
+⚡Critical CPU Usage	3	5	5	5	5
+💾Critical Disk Usage	4	4	4	4	4
+📤Outgoing Pkt Loss	0.0	0.0	0.0	0.0	0.0
+📥Incoming Pkt Loss	213094.0	213094.0	213094.0	213094.0	213094.0
+Down Time Management (DTM)
+
+Feature	🌞Daily	🔄Weekly	🌙Monthly	⏱️Quarterly	🗓️Yearly
+📉Down Alerts	1	1	1	73	73
+📈UP Alerts	0	0	0	20	20
+Windows Server Audit (WSA)
+
+Feature	🌞Daily	🔄Weekly	🌙Monthly	⏱️Quarterly	🗓️Yearly
+🚨Critical	0	0	0	0	0
+⛔Error	15	144	184	184	184
+⚠️Warning	101	104	104	104	104
+ℹ️Information	27352	98156	98156	98156	98156
+Assets & Inventory Management (AIM)
+
+Feature	🌞Daily	🔄Weekly	🌙Monthly	⏱️Quarterly	🗓️Yearly
+🧍‍♂️ Total Agents	10	10	10	10	12
+🧠 CPU Hardware	3	3	3	3	5
+💾 Memory	9	9	9	10	12
+🖥️ Total Operating Systems	3	3	3	3	4
+⚙️ Total OS Version	7	7	7	10	22
+🌐 Open Ports	60	570	2684	7697	24217
+🧩 Hotfixes	40	490	2240	6440	20640
+🔌 Network Interfaces	40	490	2240	6440	20666
+📡 IP Addresses	40	500	2290	6694	21444
+📦 Total Packages	40	560	2650	7542	23571
+  
+
+🗓️7 Years
+0
+22
+1
+2614
+40795
+229484
+  
+
+🗓️7 Years
+7
+3
+5
+4
+0.0
+213094.0
+  
+
+🗓️7 Years
+73
+20
+  
+
+🗓️7 Years
+7
+184
+104
+98157
+  
+
+🗓️7 Years
+12
+5
+12
+4
+23
+26693
+22895
+23285
+24026
+26142`;
+
+        // Load full sample data
+        function loadFullSampleData() {
+            document.getElementById('inputText').value = fullSampleData;
+            showNotification('Full sample data loaded!');
+        }
+
+        // Tab switching
+        function showTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show selected tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        // Clear input
+        function clearInput() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputArea').innerHTML = `
+                <div style="text-align: center; padding: 50px; color: #999;">
+                    <i class="fas fa-file-code fa-3x"></i>
+                    <h3>HTML Output will appear here</h3>
+                    <p>Paste your security data and click "Convert to HTML"</p>
+                </div>`;
+            document.getElementById('previewArea').innerHTML = `
+                <div style="text-align: center; padding: 50px; color: #999;">
+                    <i class="fas fa-chart-bar fa-3x"></i>
+                    <h3>Preview will appear here</h3>
+                    <p>Convert data to see preview</p>
+                </div>`;
+            showNotification('Input cleared!');
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Main conversion function
+        function convertToHTML() {
+            const inputText = document.getElementById('inputText').value.trim();
+            
+            if (!inputText) {
+                showNotification('Please paste data first!');
+                return;
+            }
+            
+            try {
+                const htmlOutput = parseCompleteSecurityData(inputText);
+                document.getElementById('outputArea').innerHTML = htmlOutput;
+                
+                // Create preview
+                const previewHTML = createPreview(htmlOutput);
+                document.getElementById('previewArea').innerHTML = previewHTML;
+                
+                showNotification('HTML Generated Successfully!');
+                showTab('output'); // Switch to output tab
+            } catch (error) {
+                document.getElementById('outputArea').innerHTML = `
+                    <div style="color: #d9534f; padding: 20px;">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Error in Conversion</h3>
+                        <p>${error.message}</p>
+                        <p>Please check your data format and try again.</p>
+                    </div>`;
+                showNotification('Conversion failed! Check format.');
+            }
+        }
+
+        // Parse complete security data with both  NOC
+        function parseCompleteSecurityData(text) {
+            text = text.replace(/\r/g, '');
+            
+            let html = `   
+    `;
+            
+           
+            
+            // Check for NOC section
+            if (text.includes('📊NETWORK OPERATION CENTER')) {
+                const nocSection = extractSection(text, '📊NETWORK OPERATION CENTER', '🎯THREAT OPERATION CENTER|🔧SECURITY ORCHESTRATION|$');
+                if (nocSection) {
+                    html += parseNOCSection(nocSection);
+                }
+            }
+            
+            // Add Report Timeline Legend
+            html += addTimelineLegend();
+            
+            // Add footer
+            
+            html += '\n</div>';
+            html += '\n</div>';
+            
+            return html;
+        }
+
+        // Extract section between start and end markers
+        function extractSection(text, startMarker, endMarker) {
+            const regex = new RegExp(`${startMarker}[\\s\\S]*?(?=${endMarker})`, 'i');
+            const match = text.match(regex);
+            return match ? match[0] : null;
+        }
+
+       
+        // Parse NOC section
+        function parseNOCSection(sectionText) {
+            let html = '\n<div style="background: #5a8f29; color: #ffffff; font-weight: bold; font-size: 18px; padding: 8px 14px; margin-top: 26px; border-radius: 4px;">📊 NETWORK OPERATION CENTER (NOC)</div>';
+            
+            // Find all NOC subsections
+            const lines = sectionText.split('\n');
+            let currentSubsection = '';
+            let currentTitle = '';
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                // Check for NOC subsystem titles
+                if (line.includes('Log Management System (LMS)') ||
+                    line.includes('System Performance Mgmt (SPM)') ||
+                    line.includes('Down Time Management (DTM)') ||
+                    line.includes('Windows Server Audit (WSA)') ||
+                    line.includes('Assets & Inventory Management (AIM)')) {
+                    
+                    if (currentTitle && currentSubsection) {
+                        html += parseSubsection(currentTitle, currentSubsection, '#5a8f29');
+                    }
+                    
+                    currentTitle = line;
+                    currentSubsection = line + '\n';
+                } else if (currentTitle) {
+                    currentSubsection += line + '\n';
+                }
+            }
+            
+            if (currentTitle && currentSubsection) {
+                html += parseSubsection(currentTitle, currentSubsection, '#5a8f29');
+            }
+            
+            return html;
+        }
+
+        // Generic subsection parser
+        function parseSubsection(title, content, color) {
+            let html = `\n<div style="background: ${color}; color: #ffffff; font-weight: bold; font-size: 16px; padding: 6px 14px; margin-top: 18px;">${title}</div>`;
+            
+            const lines = content.split('\n').filter(line => line.trim());
+            
+            // Find table start
+            let tableStart = -1;
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].includes('Feature') || 
+                    (lines[i].includes('🌞') && lines[i].includes('🔄'))) {
+                    tableStart = i;
+                    break;
+                }
+            }
+            
+            if (tableStart === -1) {
+                return html + `\n<p style="padding: 10px;">No table data found in "${title}"</p>`;
+            }
+            
+            html += '\n<table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px;">';
+            html += '\n<tbody>';
+            html += '\n<tr style="background: #f4f6f8; font-weight: bold;">';
+            html += '<th style="border: 1px solid #cfcfcf; padding: 8px; text-align: left;">Feature</th>';
+            html += '<th style="border: 1px solid #cfcfcf; text-align: center;">🌞 Daily</th>';
+            html += '<th style="border: 1px solid #cfcfcf; text-align: center;">🔄 Weekly</th>';
+            html += '<th style="border: 1px solid #cfcfcf; text-align: center;">🌙 Monthly</th>';
+            html += '<th style="border: 1px solid #cfcfcf; text-align: center;">⏱️ Quarterly</th>';
+            html += '<th style="border: 1px solid #cfcfcf; text-align: center;">🗓️ Yearly</th>';
+            html += '</tr>';
+            
+            // Process rows
+            let rowCount = 0;
+            for (let i = tableStart + 1; i < lines.length; i++) {
+                const line = lines[i];
+                
+                if (!line.trim() || line.trim() === '   ' || line.includes('🗓️7 Years')) {
+                    continue;
+                }
+                
+                // Stop at next subsection
+                if (lines[i].includes('Log Management System (LMS)') ||
+                    lines[i].includes('System Performance Mgmt (SPM)') ||
+                    lines[i].includes('Down Time Management (DTM)') ||
+                    lines[i].includes('Windows Server Audit (WSA)') ||
+                    lines[i].includes('Assets & Inventory Management (AIM)') ||
+                    lines[i].includes('Active Response')) {
+                    break;
+                }
+                
+                const rowData = parseTableRow(line);
+                if (rowData) {
+                    html += '\n<tr>';
+                    html += `<td style="border: 1px solid #cfcfcf; padding: 8px;">${rowData.feature}</td>`;
+                    html += `<td style="border: 1px solid #cfcfcf; text-align: center;">${rowData.daily}</td>`;
+                    html += `<td style="border: 1px solid #cfcfcf; text-align: center;">${rowData.weekly}</td>`;
+                    html += `<td style="border: 1px solid #cfcfcf; text-align: center;">${rowData.monthly}</td>`;
+                    html += `<td style="border: 1px solid #cfcfcf; text-align: center;">${rowData.quarterly}</td>`;
+                    html += `<td style="border: 1px solid #cfcfcf; text-align: center;">${rowData.yearly}</td>`;
+                    html += '</tr>';
+                    rowCount++;
+                }
+            }
+            
+            if (rowCount === 0) {
+                html += '\n<tr><td colspan="6" style="text-align: center; padding: 20px; color: #666;">No data rows found</td></tr>';
+            }
+            
+            html += '\n</tbody></table>';
+            return html;
+        }
+
+        // Parse table row
+        function parseTableRow(line) {
+            if (!line || !line.trim()) return null;
+            
+            line = line.trim();
+            
+            // Method 1: Tab-separated
+            if (line.includes('\t')) {
+                const parts = line.split('\t').filter(p => p.trim() !== '');
+                if (parts.length >= 6) {
+                    return {
+                        feature: parts[0].trim(),
+                        daily: parts[1].trim() || '0',
+                        weekly: parts[2].trim() || '0',
+                        monthly: parts[3].trim() || '0',
+                        quarterly: parts[4].trim() || '0',
+                        yearly: parts[5].trim() || '0'
+                    };
+                }
+            }
+            
+            // Method 2: Split by multiple spaces
+            const parts = line.split(/\s{2,}/).filter(p => p.trim() !== '');
+            if (parts.length >= 6) {
+                return {
+                    feature: parts[0].trim(),
+                    daily: parts[1].trim() || '0',
+                    weekly: parts[2].trim() || '0',
+                    monthly: parts[3].trim() || '0',
+                    quarterly: parts[4].trim() || '0',
+                    yearly: parts[5].trim() || '0'
+                };
+            }
+            
+            return null;
+        }
+
+        // Extract 7 Years data
+        function extractSevenYearsData(text) {
+            const lines = text.split('\n');
+            let result = [];
+            let inSevenYears = false;
+            
+            for (let line of lines) {
+                if (line.includes('🗓️7 Years')) {
+                    inSevenYears = true;
+                    continue;
+                }
+                
+                if (inSevenYears && line.trim() && !isNaN(parseInt(line.trim()))) {
+                    result.push(line.trim());
+                }
+                
+                if (inSevenYears && line.trim() === '') {
+                    break;
+                }
+            }
+            
+            return result.length > 0 ? result : null;
+        }
+
+        // Parse 7 Years data
+        function parseSevenYearsData(dataArray, color) {
+            if (!dataArray || dataArray.length === 0) return '';
+            
+            let html = `\n<div style="background: ${color}; color: #ffffff; font-weight: bold; font-size: 16px; padding: 6px 14px; margin-top: 20px; border-radius: 4px;">🗓️ 7 Years Summary</div>`;
+            html += '\n<table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px;">';
+            html += '\n<tbody>';
+            html += '\n<tr style="background: #f4f6f8; font-weight: bold;">';
+            html += '<th style="border: 1px solid #cfcfcf; padding: 8px; text-align: left;">Feature</th>';
+            html += '<th style="border: 1px solid #cfcfcf; text-align: center;">7 Years Total</th>';
+            html += '</tr>';
+            
+            // Common features for 7 years data
+            const features = [
+                '📝 Active Response Summary',
+                '🚫 Active Response Firewall Block',
+                '🔒 User Disable',
+                '📁 File Quarantine',
+                '🔌 USB Block',
+                '📜 Software Policy',
+                '⚠️ Uncommon Ports'
+            ];
+            
+            for (let i = 0; i < Math.min(features.length, dataArray.length); i++) {
+                html += '\n<tr>';
+                html += `<td style="border: 1px solid #cfcfcf; padding: 8px;">${features[i]}</td>`;
+                html += `<td style="border: 1px solid #cfcfcf; text-align: center;">${dataArray[i] || '0'}</td>`;
+                html += '</tr>';
+            }
+            
+            html += '\n</tbody></table>';
+            return html;
+        }
+
+        // Add timeline legend
+        function addTimelineLegend() {
+            return ``;
+        }
+
+        // Create preview
+        function createPreview(htmlContent) {
+            // Extract first few tables for preview
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlContent;
+            const tables = tempDiv.querySelectorAll('table');
+            
+            let preview = '<div style="padding: 10px;">';
+            preview += '<h3 style="color: #2366a8;">Preview - Key Sections</h3>';
+            
+            // Show first 3 tables or all if less
+            const maxTables = Math.min(3, tables.length);
+            for (let i = 0; i < maxTables; i++) {
+                preview += '<div style="margin-bottom: 20px;">';
+                preview += `<h4 style="color: #666; margin-bottom: 5px;">Section ${i + 1}</h4>`;
+                preview += tables[i].outerHTML;
+                preview += '</div>';
+            }
+            
+            if (tables.length > 3) {
+                preview += `<p style="color: #999; text-align: center;">... and ${tables.length - 3} more sections</p>`;
+            }
+            
+            preview += '</div>';
+            return preview;
+        }
+
+        // Copy HTML to clipboard
+        function copyHTML() {
+            const outputArea = document.getElementById('outputArea');
+            const htmlContent = outputArea.innerHTML;
+            
+            if (!htmlContent || htmlContent.includes('HTML Output will appear')) {
+                showNotification('No HTML to copy! Convert first.');
+                return;
+            }
+            
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = htmlContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+            
+            showNotification('HTML copied to clipboard!');
+        }
+
+        // Download HTML file
+        function downloadHTML() {
+            const outputArea = document.getElementById('outputArea');
+            const htmlContent = outputArea.innerHTML;
+            
+            if (!htmlContent || htmlContent.includes('HTML Output will appear')) {
+                showNotification('No HTML to download! Convert first.');
+                return;
+            }
+            
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Security_Report_' + new Date().toISOString().split('T')[0] + '.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('HTML file downloaded!');
+        }
+
+        // Preview in new tab
+        function previewHTML() {
+            const outputArea = document.getElementById('outputArea');
+            const htmlContent = outputArea.innerHTML;
+            
+            if (!htmlContent || htmlContent.includes('HTML Output will appear')) {
+                showNotification('No HTML to preview! Convert first.');
+                return;
+            }
+            
+            const newWindow = window.open();
+            newWindow.document.write(htmlContent);
+            newWindow.document.close();
+        }
+    </script>
+</body>
+</html>

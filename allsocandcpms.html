@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unishield Report Converter - Auto Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2366a8 0%, #1a4d8c 100%);
+            color: white;
+            padding: 25px 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header h1 i {
+            font-size: 40px;
+        }
+        
+        .content {
+            display: flex;
+            min-height: 600px;
+        }
+        
+        .input-section, .output-section {
+            flex: 1;
+            padding: 25px;
+        }
+        
+        .input-section {
+            border-right: 2px dashed #e0e0e0;
+            background: #f8f9fa;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: #2366a8;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2366a8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #2366a8;
+            box-shadow: 0 0 0 3px rgba(35, 102, 168, 0.1);
+        }
+        
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .convert-btn {
+            background: linear-gradient(135deg, #5a8f29 0%, #4a7f19 100%);
+            color: white;
+        }
+        
+        .convert-btn:hover {
+            background: linear-gradient(135deg, #4a7f19 0%, #3a6f09 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(90, 143, 41, 0.4);
+        }
+        
+        .clear-btn {
+            background: #f8f9fa;
+            color: #666;
+            border: 2px solid #ddd;
+        }
+        
+        .clear-btn:hover {
+            background: #e9ecef;
+            color: #333;
+        }
+        
+        .output-section {
+            position: relative;
+        }
+        
+        .output-area {
+            height: 400px;
+            overflow: auto;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: white;
+        }
+        
+        .action-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .copy-btn {
+            background: linear-gradient(135deg, #efb956 0%, #dfa946 100%);
+            color: white;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #cc7a00 0%, #bc6a00 100%);
+            color: white;
+        }
+        
+        .copy-btn:hover, .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .preview-btn {
+            background: linear-gradient(135deg, #9c27b0 0%, #8c17a0 100%);
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .sample-data {
+            margin-top: 20px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+        }
+        
+        .sample-data h4 {
+            color: #2366a8;
+            margin-bottom: 10px;
+        }
+        
+        .sample-text {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+            max-height: 80px;
+            overflow: hidden;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-shield-alt"></i> Unishield Report Converter</h1>
+            <p>Paste your Unishield text data → Get professional HTML report instantly</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-section">
+                <div class="section-title">
+                    <i class="fas fa-keyboard"></i> Input Text Data
+                </div>
+                <textarea id="inputText" placeholder="Paste your Unishield report text here exactly as you have it...
+Example:
+Unishield
+XOC Summary
+
+Events Summary
+Feature 🌞Daily 🔄Weekly 🌙Monthly ⏱️Quarterly 🗓️Yearly
+📊 Asset & Inventory Management (AIM) 400 4750 21914 63116 200471"></textarea>
+                
+                <div class="button-group">
+                    <button class="convert-btn" onclick="convertToHTML()">
+                        <i class="fas fa-magic"></i> Convert to HTML
+                    </button>
+                    <button class="clear-btn" onclick="clearInput()">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                </div>
+                
+                <div class="sample-data" onclick="loadSampleData()">
+                    <h4><i class="fas fa-lightbulb"></i> Sample Data (Click to load)</h4>
+                    <div class="sample-text">
+                        Unishield XOC Summary... Events Summary Feature 🌞Daily 🔄Weekly 🌙Monthly... 
+                        📊 Asset & Inventory Management (AIM) 400 4750 21914...
+                    </div>
+                </div>
+            </div>
+            
+            <div class="output-section">
+                <div class="section-title">
+                    <i class="fas fa-code"></i> Generated HTML Output
+                </div>
+                <div class="output-area" id="outputArea">
+                    <!-- Generated HTML will appear here -->
+                    <div style="text-align: center; padding: 50px; color: #999;">
+                        <i class="fas fa-file-code fa-3x"></i>
+                        <h3>HTML Output will appear here</h3>
+                        <p>Paste your text data and click "Convert to HTML"</p>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="copy-btn" onclick="copyHTML()">
+                        <i class="fas fa-copy"></i> Copy HTML
+                    </button>
+                    <button class="download-btn" onclick="downloadHTML()">
+                        <i class="fas fa-download"></i> Download HTML
+                    </button>
+                </div>
+                
+                <button class="preview-btn" onclick="previewHTML()">
+                    <i class="fas fa-eye"></i> Preview in New Tab
+                </button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><i class="fas fa-bolt"></i> Instant Conversion | <i class="fas fa-shield"></i> Unishield Compatible | <i class="fas fa-sync"></i> One-Click Process</p>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">Copied to clipboard!</div>
+
+    <script>
+        // Full sample data with ALL sections including CSPM
+        const sampleData = `Unishield
+XOC Summary
+
+Events Summary
+
+Feature	🌞Daily	🔄Weekly	🌙Monthly	⏱️Quarterly	🗓️Yearly
+📊 Asset & Inventory Management (AIM)	383	4533	21767	63116	200471
+🔒 Endpoint Detection & Response (EDR)	78896	751666	16906295	18090450	18197258
+🛡️ Vulnerabilities & Patching (CVE & CWE)	8706	8706	8706	8706	12766
+📈 Total Statistics Records - Vulnerabilities	444	3867	17019	26853	26853
+📡 Total Monitoring Events - Vulnerabilities	750	6510	28560	28560	28560
+📝 Log File (Syslog) Management (LFM)	3285594	10995310	11014976	11015027	11295481
+🌐 Web Application Firewall (WAF)	0	0	4	72	670
+🚨 Behavior & Anomaoly Detection (NBAD)	0	0	0	0	0
+🌊 Network Flow Management (NFM)	0	0	0	0	0
+🔍 Network Intrusion Detection (NIDS)	0	0	0	0	0
+💓 Bussiness Continuity Management (BCM)	222	1954	8589	475856	475856
+🪟 Windows Auditing Logs Monitoring	33245	119983	119983	119983	119983
+🐧 Linux Auditing & Logs Monitoring	0	0	0	0	0
+⚙️ System Performance Metrics (SPM)	1923091	6915034	6915034	6915034	6915034
+
+🛡️SECURITY OPERATION CENTER (SOC)
+
+Endpoints Summary
+
+Feature	🌞Daily	🔄Weekly	🌙Monthly	⏱️Quarterly	🗓️Yearly
+⚪Total Endpoints	10	10	10	10	10
+🟢Active Endpoints	6	6	7	7	7
+🔴Inactive Endpoints	4	5	8	8	8
+🖥Total Windows Servers	8	8	8	8	8
+🟢Active Windows Servers	6	6	7	7	7
+🔴Inactive Windows Servers	2	3	6	6	6
+💻Total Windows Endpoints	2	2	2	2	2
+🟢Active Windows Endpoints	0	0	0	0	0
+🔴Inactive Windows Endpoints	2	2	2	2	2
+🐧Total Linux Endpoints	0	0	0	0	0
+🟢Active Linux Endpoints	0	0	0	0	0
+🔴Inactive Linux Endpoints	0	0	0	0	0
+🍎Total Mac Endpoints	0	0	0	0	0
+🟢Active Mac Endpoints	0	0	0	0	0
+🔴Inactive Mac Endpoints	0	0	0	0	0
+🛡️EPP Enabled Windows Endpoints	6	6	6	6	7
+
+Endpoint Detection & Response (EDR)
+
+Feature	🌞Daily	🔄Weekly	🌙Monthly	⏱️Quarterly	🗓️Yearly
+🚨Critical - Security Events	1	67	151	156	162
+‼️High - Security Events	0	30	14959	21479	21861
+☠️Critical - MITRE ATT&CK	1	50	105	107	113
+🎯High - MITRE ATT&CK	0	30	331	508	876
+🔥Critical - Brute Force - Remote	0	0	0	0	3
+⚠️High - Authentication Failures - Remote	74	1624	3632	3737	3740
+✅Info - Authentication Success - Remote	15	185	689663	756922	764360
+🔥Critical - Brute Force - Local	0	4	5	9	16
+⚠️High - Authentication Failures - Local	74	1628	3641	3780	3787
+✅Info - Authentication Success - Local	15	270	689784	799037	815554
+📋Open SCAP	0	0	0	0	0
+📂File Integrity Monitoring	1	1	2	8	8
+📊Total Security Events	78921	751691	16906320	18090475	18197283
+
+Endpoint Vulnerabilities
+
+Feature	🌞Daily	🔄Weekly	🌙Monthly	⏱️Quarterly	🗓️Yearly
+🚨Critical OS Vulnerability - Open	72	72	72	72	110
+‼️High OS Vulnerability - Open	4057	4057	4057	4057	5540
+💥Critical 3rd Party Vulnerability - Open	71	71	71	71	93
+🔥High 3rd Party Vulnerability - Open	1547	1547	1547	1547	2249
+❌ CIS-CAT Compliance - Failed	0	0	13	31	637
+🎯Critical Vulnerability - Solved	0	0	0	0	9
+☢️High Vulnerability - Solved	0	0	0	36	569
+✅ CIS-CAT Compliance - Passed	0	1	4	4	4
+
+Web Application Firewall (WAF)
+
+Feature	🌞Daily	🔄Weekly	🌙Monthly	⏱️Quarterly	🗓️Yearly
+⛔Blocked Request	0	0	0	0	3
+💉Application Injections	0	0	0	0	0
+🔓Broken Authentication	0	0	0	0	0
+🕵️Sensitive data Exposure	0	0	0	0	0
+🧱XML External Entities	0	0	0	0	0
+🚫Broken Access Control	0	0	0	0	0
+🛠️Sec Misconfiguration	0	0	0	0	0
+⚔️Cross-Site Script XSS	0	0	0	0	274
+🧯OWASP Top 10 Attacks	0	0	0	0	274
+
+Network Detection & Response (NDR)
+
+Feature	🌞Daily	🔄Weekly	🌙Monthly	⏱️Quarterly	🗓️Yearly
+🛑Blacklisted IP	0	0	0	0	0
+🚨Intrusion Emergency	0	0	0	0	0
+🔥Intrusion Critical	0	0	0	0	0
+⚠️Intrusion Warning	0	0	0	0	0
+🧬Signature Anomalies	0	0	0	0	0
+🤖Behaviour Anomalies	0	0	0	0	0
+
+☁️CLOUD SECURITY POSTURE MANAGEMENT (CSPM)
+
+Cloud Security Posture Management(CSPM)
+
+Feature	🌞Daily	🔄Weekly	🌙Monthly	⏱️Quarterly	🗓️Yearly
+🆔User ID	0	0	0	0	0
+🚨Critical Events	0	0	0	0	0
+⚠️High Events	0	0	0	0	0
+♂️Threat Intel	0	0	0	0	0
+📊Exchange Events Summary	0	0	0	0	0
+💥Exchange Events - Untrusted Region	0	0	0	0	0
+💥Exchange Events - Trusted Region	0	0	0	0	0
+✅O365 Login Sucess - Untrusted Region	0	0	0	0	0
+✅O365 Login Sucess - Trusted Region	0	0	0	0	0
+🔑O365 Login Failure - Untrusted Region	0	0	0	0	0
+🔑O365 Login Failure - Trusted Region	0	0	0	0	0
+📁OneDrive Events - Untrusted Region	0	0	0	0	0
+📁OneDrive Events - Trusted Region	0	0	0	0	0
+💬Microsoft Teams - Untrusted Region	0	0	0	0	0
+💬Microsoft Teams - Trusted Region	0	0	0	0	0
+📂SharePoint Events - Untrusted Region	0	0	0	0	0
+📂SharePoint Events - Trusted Region	0	0	0	0	0
+⚡PowerPlatform	0	0	0	0	0
+🛡️Security Compliance	0	0	0	0	0
+✈️AIR Investigation	0	0	0	0	0`;
+
+        // Load sample data when clicked
+        function loadSampleData() {
+            document.getElementById('inputText').value = sampleData;
+            showNotification('Sample data loaded!');
+        }
+
+        // Clear input
+        function clearInput() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputArea').innerHTML = `
+                <div style="text-align: center; padding: 50px; color: #999;">
+                    <i class="fas fa-file-code fa-3x"></i>
+                    <h3>HTML Output will appear here</h3>
+                    <p>Paste your text data and click "Convert to HTML"</p>
+                </div>`;
+            showNotification('Input cleared!');
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Main conversion function - COMPLETE VERSION
+        function convertToHTML() {
+            const inputText = document.getElementById('inputText').value.trim();
+            
+            if (!inputText) {
+                showNotification('Please paste some data first!');
+                return;
+            }
+            
+            try {
+                const htmlOutput = parseCompleteUnishieldData(inputText);
+                document.getElementById('outputArea').innerHTML = htmlOutput;
+                showNotification('HTML Generated Successfully!');
+            } catch (error) {
+                document.getElementById('outputArea').innerHTML = `
+                    <div style="color: #d9534f; padding: 20px;">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Error in Conversion</h3>
+                        <p>${error.message}</p>
+                        <p>Please check your input format and try again.</p>
+                    </div>`;
+                showNotification('Conversion failed! Check format.');
+            }
+        }
+
+        // COMPLETE PARSER - Handles ALL sections including CSPM
+        function parseCompleteUnishieldData(text) {
+            // Clean and normalize the text
+            text = text.replace(/\r/g, ''); // Remove carriage returns
+            
+            // Start HTML
+            let html = `
+<div style="max-width: 1200px; margin: 40px auto; padding: 24px; font-family: Arial, sans-serif; background: #ffffff; border: 1px solid #bbb; border-radius: 14px;">
+    <h2 style="text-align: center; color: #d9534f; margin-bottom: 0;">Unishield</h2>
+    <div style="text-align: center; color: #444; font-size: 18px; margin-bottom: 30px;">XOC Summary</div>`;
+            
+            // 1. PARSE EVENTS SUMMARY SECTION
+            const eventsMatch = text.match(/Events Summary[\s\S]*?(?=\s*(?:🗓️7 Years|🛡️SECURITY OPERATION CENTER|$))/i);
+            
+            if (eventsMatch) {
+                html += parseEventsSummary(eventsMatch[0]);
+            }
+            
+            // 2. PARSE SOC SECTION
+            const socMatch = text.match(/🛡️SECURITY OPERATION CENTER[\s\S]*?(?=\s*(?:☁️CLOUD SECURITY|📊NETWORK OPERATION|🎯THREAT OPERATION|$))/i);
+            
+            if (socMatch) {
+                html += parseCompleteSOCSection(socMatch[0]);
+            }
+            
+            // 3. PARSE CSPM SECTION
+            const cspmMatch = text.match(/☁️CLOUD SECURITY POSTURE MANAGEMENT[\s\S]*?(?=\s*(?:🔧SECURITY ORCHESTRATION|📊NETWORK OPERATION|🎯THREAT OPERATION|$))/i);
+            
+            if (cspmMatch) {
+                html += parseCSPMSection(cspmMatch[0]);
+            }
+            
+            // Add footer
+            
+            html += '\n</div>';
+            html += '\n</div>';
+            
+            return html;
+        }
+
+        // Function to parse Events Summary section
+        function parseEventsSummary(sectionText) {
+            let html = '\n<div style="background: #2366a8; color: #ffffff; font-weight: bold; font-size: 18px; padding: 8px 14px; border-radius: 4px;">Events Summary</div>';
+            
+            const lines = sectionText.split('\n').filter(line => line.trim());
+            
+            // Find table start
+            let tableStart = -1;
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].includes('Feature') && 
+                    (lines[i].includes('Daily') || lines[i].includes('🌞'))) {
+                    tableStart = i;
+                    break;
+                }
+            }
+            
+            if (tableStart === -1) {
+                return html + '\n<p>No table data found</p>';
+            }
+            
+            html += '\n<table style="width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px;">';
+            html += '\n<tbody>';
+            html += '\n<tr style="background: #f4f6f8; font-weight: bold;">';
+            html += '<th style="border: 1px solid #cfcfcf; padding: 8px; text-align: left;">Feature</th>';
+            html += '<th style="border: 1px solid #cfcfcf; text-align: center;">🌞 Daily</th>';
+            html += '<th style="border: 1px solid #cfcfcf; text-align: center;">🔄 Weekly</th>';
+            html += '<th style="border: 1px solid #cfcfcf; text-align: center;">🌙 Monthly</th>';
+            html += '<th style="border: 1px solid #cfcfcf; text-align: center;">⏱️ Quarterly</th>';
+            html += '<th style="border: 1px solid #cfcfcf; text-align: center;">🗓️ Yearly</th>';
+            html += '</tr>';
+            
+            // Process rows
+            for (let i = tableStart + 1; i < lines.length; i++) {
+                const line = lines[i];
+                
+                if (!line.trim() || 
+                    line.trim() === '   ' || 
+                    line.includes('🗓️7 Years') ||
+                    line.includes('🛡️SECURITY OPERATION')) {
+                    break;
+                }
+                
+                const rowData = parseTableRow(line);
+                if (rowData) {
+                    html += '\n<tr>';
+                    html += `<td style="border: 1px solid #cfcfcf; padding: 8px;">${rowData.feature}</td>`;
+                    html += `<td style="border: 1px solid #cfcfcf; text-align: center;">${rowData.daily}</td>`;
+                    html += `<td style="border: 1px solid #cfcfcf; text-align: center;">${rowData.weekly}</td>`;
+                    html += `<td style="border: 1px solid #cfcfcf; text-align: center;">${rowData.monthly}</td>`;
+                    html += `<td style="border: 1px solid #cfcfcf; text-align: center;">${rowData.quarterly}</td>`;
+                    html += `<td style="border: 1px solid #cfcfcf; text-align: center;">${rowData.yearly}</td>`;
+                    html += '</tr>';
+                }
+            }
+            
+            html += '\n</tbody></table>';
+            return html;
+        }
+
+        // Function to parse COMPLETE SOC Section
+        function parseCompleteSOCSection(sectionText) {
+            let html = '\n<div style="background: #2366a8; color: #ffffff; font-weight: bold; font-size: 18px; padding: 8px 14px; margin-top: 26px; border-radius: 4px;">🛡️ SECURITY OPERATION CENTER (SOC)</div>';
+            
+            // Split into subsections
+            const lines = sectionText.split('\n');
+            let currentSubsection = '';
+            let currentTitle = '';
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                if (line.includes('Endpoints Summary') || 
+                    line.includes('Endpoint Detection & Response (EDR)') ||
+                    line.includes('Endpoint Vulnerabilities') ||
+                    line.includes('Web Application Firewall (WAF)') ||
+                    line.includes('Network Detection & Response (NDR)')) {
+                    
+                    // Process previous subsection if exists
+                    if (currentTitle && currentSubsection) {
+                        html += parseSubsectionWithTitle(currentTitle, currentSubsection);
+                    }
+                    
+                    // Start new subsection
+                    currentTitle = line;
+                    currentSubsection = line + '\n';
+                } else if (currentTitle) {
+                    currentSubsection += line + '\n';
+                }
+                
+                // Stop at CSPM section
+                if (line.includes('☁️CLOUD SECURITY')) {
+                    break;
+                }
+            }
+            
+            // Process the last subsection
+            if (currentTitle && currentSubsection) {
+                html += parseSubsectionWithTitle(currentTitle, currentSubsection);
+            }
+            
+            return html;
+        }
+
+        // Function to parse CSPM Section
+        function parseCSPMSection(sectionText) {
+            let html = '\n<div style="background: #efb956; color: #ffffff; font-weight: bold; font-size: 18px; padding: 8px 14px; margin-top: 26px; border-radius: 4px;">☁️ CLOUD SECURITY POSTURE MANAGEMENT (CSPM)</div>';
+            
+            // Check for Cloud Security Posture Management subsection
+            const cloudMatch = sectionText.match(/Cloud Security Posture Management[\s\S]*?(?=\s*(?:🗓️7 Years|$))/i);
+            
+            if (cloudMatch) {
+                html += parseSubsectionWithTitle('Cloud Security Posture Management(CSPM)', cloudMatch[0]);
+            }
+            
+            return html;
+        }
+
+        // Function to parse any subsection with title
+        function parseSubsectionWithTitle(title, content) {
+            // Remove "7 Years" data
+            content = content.replace(/🗓️7 Years[\s\S]*?(?=\n\s*\n|$)/g, '');
+            
+            let html = `\n<div style="background: ${getSectionColor(title)}; color: #ffffff; font-weight: bold; font-size: 16px; padding: 6px 14px; margin-top: 18px;">${title}</div>`;
+            
+            const lines = content.split('\n').filter(line => line.trim());
+            
+            // Find table start
+            let tableStart = -1;
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].includes('Feature') && 
+                    (lines[i].includes('Daily') || lines[i].includes('🌞'))) {
+                    tableStart = i;
+                    break;
+                }
+            }
+            
+            if (tableStart === -1) {
+                // Try to find table without "Feature" header
+                for (let i = 0; i < lines.length; i++) {
+                    if (lines[i].includes('Daily') || lines[i].includes('🌞')) {
+                        tableStart = i - 1; // Assume previous line is header
+                        break;
+                    }
+                }
+            }
+            
+            if (tableStart === -1 || tableStart >= lines.length - 1) {
+                return html + '\n<p style="padding: 10px;">No table data found</p>';
+            }
+            
+            html += '\n<table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px;">';
+            html += '\n<tbody>';
+            html += '\n<tr style="background: #f4f6f8; font-weight: bold;">';
+            html += '<th style="border: 1px solid #cfcfcf; padding: 8px; text-align: left;">Feature</th>';
+            html += '<th style="border: 1px solid #cfcfcf; text-align: center;">🌞 Daily</th>';
+            html += '<th style="border: 1px solid #cfcfcf; text-align: center;">🔄 Weekly</th>';
+            html += '<th style="border: 1px solid #cfcfcf; text-align: center;">🌙 Monthly</th>';
+            html += '<th style="border: 1px solid #cfcfcf; text-align: center;">⏱️ Quarterly</th>';
+            html += '<th style="border: 1px solid #cfcfcf; text-align: center;">🗓️ Yearly</th>';
+            html += '</tr>';
+            
+            // Process rows
+            for (let i = tableStart + 1; i < lines.length; i++) {
+                const line = lines[i];
+                
+                if (!line.trim() || 
+                    line.includes('Feature') || 
+                    line.includes(title) ||
+                    line.includes('🗓️7 Years')) {
+                    continue;
+                }
+                
+                // Stop at next major section
+                if (line.includes('Endpoint Detection & Response (EDR)') ||
+                    line.includes('Endpoint Vulnerabilities') ||
+                    line.includes('Web Application Firewall (WAF)') ||
+                    line.includes('Network Detection & Response (NDR)') ||
+                    line.includes('Cloud Security Posture Management') ||
+                    line.includes('☁️CLOUD SECURITY')) {
+                    break;
+                }
+                
+                const rowData = parseTableRow(line);
+                if (rowData) {
+                    html += '\n<tr>';
+                    html += `<td style="border: 1px solid #cfcfcf; padding: 8px;">${rowData.feature}</td>`;
+                    html += `<td style="border: 1px solid #cfcfcf; text-align: center;">${rowData.daily}</td>`;
+                    html += `<td style="border: 1px solid #cfcfcf; text-align: center;">${rowData.weekly}</td>`;
+                    html += `<td style="border: 1px solid #cfcfcf; text-align: center;">${rowData.monthly}</td>`;
+                    html += `<td style="border: 1px solid #cfcfcf; text-align: center;">${rowData.quarterly}</td>`;
+                    html += `<td style="border: 1px solid #cfcfcf; text-align: center;">${rowData.yearly}</td>`;
+                    html += '</tr>';
+                }
+            }
+            
+            html += '\n</tbody></table>';
+            return html;
+        }
+
+        // Get color based on section title
+        function getSectionColor(title) {
+            if (title.includes('SOC') || title.includes('Security Operation')) {
+                return '#2366a8';
+            } else if (title.includes('CSPM') || title.includes('Cloud Security')) {
+                return '#efb956';
+            } else if (title.includes('Endpoint') && title.includes('Response')) {
+                return '#2366a8';
+            } else if (title.includes('Vulnerabilities')) {
+                return '#2366a8';
+            } else if (title.includes('WAF') || title.includes('Web Application')) {
+                return '#2366a8';
+            } else if (title.includes('NDR') || title.includes('Network Detection')) {
+                return '#2366a8';
+            } else {
+                return '#2366a8'; // Default color
+            }
+        }
+
+        // Universal function to parse any table row
+        function parseTableRow(line) {
+            if (!line || !line.trim() || line.trim() === '   ' || line.includes('🗓️7 Years')) {
+                return null;
+            }
+            
+            // Remove extra spaces but preserve emojis
+            line = line.replace(/\s+/g, ' ').trim();
+            
+            // Try multiple parsing methods
+            
+            // Method 1: Tab-separated
+            if (line.includes('\t')) {
+                const parts = line.split('\t').filter(p => p.trim() !== '');
+                if (parts.length >= 6) {
+                    return {
+                        feature: parts[0].trim(),
+                        daily: parts[1] || '0',
+                        weekly: parts[2] || '0',
+                        monthly: parts[3] || '0',
+                        quarterly: parts[4] || '0',
+                        yearly: parts[5] || '0'
+                    };
+                }
+            }
+            
+            // Method 2: Regex for pattern with 5 numbers
+            const regex1 = /^(.+?)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/;
+            const match1 = line.match(regex1);
+            
+            if (match1) {
+                return {
+                    feature: match1[1].trim(),
+                    daily: match1[2],
+                    weekly: match1[3],
+                    monthly: match1[4],
+                    quarterly: match1[5],
+                    yearly: match1[6]
+                };
+            }
+            
+            // Method 3: Split by 2+ spaces
+            const parts = line.split(/\s{2,}/).filter(p => p.trim() !== '');
+            if (parts.length >= 6) {
+                return {
+                    feature: parts[0].trim(),
+                    daily: parts[1] || '0',
+                    weekly: parts[2] || '0',
+                    monthly: parts[3] || '0',
+                    quarterly: parts[4] || '0',
+                    yearly: parts[5] || '0'
+                };
+            }
+            
+            // Method 4: Handle special cases with emojis
+            const emojiPattern = /([🆔🚨⚠️♂️📊💥✅🔑📁💬📂⚡🛡️✈️⚪🟢🔴🖥💻🐧🍎🛡️🎯‼️☠️🔥📋📂⛔💉🔓🕵️🧱🚫🛠️⚔️🧯🛑🧬🤖].+?|[A-Za-z].+?)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/;
+            const emojiMatch = line.match(emojiPattern);
+            
+            if (emojiMatch) {
+                return {
+                    feature: emojiMatch[1].trim(),
+                    daily: emojiMatch[2],
+                    weekly: emojiMatch[3],
+                    monthly: emojiMatch[4],
+                    quarterly: emojiMatch[5],
+                    yearly: emojiMatch[6]
+                };
+            }
+            
+            return null;
+        }
+
+        // Copy HTML to clipboard
+        function copyHTML() {
+            const outputArea = document.getElementById('outputArea');
+            const htmlContent = outputArea.innerHTML;
+            
+            if (!htmlContent || htmlContent.includes('HTML Output will appear')) {
+                showNotification('No HTML to copy! Convert first.');
+                return;
+            }
+            
+            // Create temporary textarea for copying
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = htmlContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+            
+            showNotification('HTML copied to clipboard!');
+        }
+
+        // Download HTML file
+        function downloadHTML() {
+            const outputArea = document.getElementById('outputArea');
+            const htmlContent = outputArea.innerHTML;
+            
+            if (!htmlContent || htmlContent.includes('HTML Output will appear')) {
+                showNotification('No HTML to download! Convert first.');
+                return;
+            }
+            
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Unishield_Report_' + new Date().toISOString().split('T')[0] + '.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('HTML file downloaded!');
+        }
+
+        // Preview in new tab
+        function previewHTML() {
+            const outputArea = document.getElementById('outputArea');
+            const htmlContent = outputArea.innerHTML;
+            
+            if (!htmlContent || htmlContent.includes('HTML Output will appear')) {
+                showNotification('No HTML to preview! Convert first.');
+                return;
+            }
+            
+            const newWindow = window.open();
+            newWindow.document.write(htmlContent);
+            newWindow.document.close();
+        }
+    </script>
+</body>
+</html>

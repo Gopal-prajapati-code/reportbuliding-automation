@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unishield Report Converter - Auto Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2366a8 0%, #1a4d8c 100%);
+            color: white;
+            padding: 25px 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header h1 i {
+            font-size: 40px;
+        }
+        
+        .content {
+            display: flex;
+            min-height: 600px;
+        }
+        
+        .input-section, .output-section {
+            flex: 1;
+            padding: 25px;
+        }
+        
+        .input-section {
+            border-right: 2px dashed #e0e0e0;
+            background: #f8f9fa;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: #2366a8;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2366a8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #2366a8;
+            box-shadow: 0 0 0 3px rgba(35, 102, 168, 0.1);
+        }
+        
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .convert-btn {
+            background: linear-gradient(135deg, #5a8f29 0%, #4a7f19 100%);
+            color: white;
+        }
+        
+        .convert-btn:hover {
+            background: linear-gradient(135deg, #4a7f19 0%, #3a6f09 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(90, 143, 41, 0.4);
+        }
+        
+        .clear-btn {
+            background: #f8f9fa;
+            color: #666;
+            border: 2px solid #ddd;
+        }
+        
+        .clear-btn:hover {
+            background: #e9ecef;
+            color: #333;
+        }
+        
+        .output-section {
+            position: relative;
+        }
+        
+        .output-area {
+            height: 400px;
+            overflow: auto;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: white;
+        }
+        
+        .action-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .copy-btn {
+            background: linear-gradient(135deg, #efb956 0%, #dfa946 100%);
+            color: white;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #cc7a00 0%, #bc6a00 100%);
+            color: white;
+        }
+        
+        .copy-btn:hover, .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .preview-btn {
+            background: linear-gradient(135deg, #9c27b0 0%, #8c17a0 100%);
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .sample-data {
+            margin-top: 20px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+        }
+        
+        .sample-data h4 {
+            color: #2366a8;
+            margin-bottom: 10px;
+        }
+        
+        .sample-text {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+            max-height: 80px;
+            overflow: hidden;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-shield-alt"></i> Unishield Report Converter</h1>
+            <p>Paste your Unishield text data → Get professional HTML report instantly</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-section">
+                <div class="section-title">
+                    <i class="fas fa-keyboard"></i> Input Text Data
+                </div>
+                <textarea id="inputText" placeholder="Paste your Unishield report text here exactly as you have it...
+Example:
+Unishield
+XOC Summary
+
+Events Summary
+Feature 🌞Daily 🔄Weekly 🌙Monthly ⏱️Quarterly 🗓️Yearly
+📊 Asset & Inventory Management (AIM) 400 4750 21914 63116 200471"></textarea>
+                
+                <div class="button-group">
+                    <button class="convert-btn" onclick="convertToHTML()">
+                        <i class="fas fa-magic"></i> Convert to HTML
+                    </button>
+                    <button class="clear-btn" onclick="clearInput()">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                </div>
+                
+                <div class="sample-data" onclick="loadSampleData()">
+                    <h4><i class="fas fa-lightbulb"></i> Sample Data (Click to load)</h4>
+                    <div class="sample-text">
+                        Unishield XOC Summary... Events Summary Feature 🌞Daily 🔄Weekly 🌙Monthly... 
+                        📊 Asset & Inventory Management (AIM) 400 4750 21914...
+                    </div>
+                </div>
+            </div>
+            
+            <div class="output-section">
+                <div class="section-title">
+                    <i class="fas fa-code"></i> Generated HTML Output
+                </div>
+                <div class="output-area" id="outputArea">
+                    <!-- Generated HTML will appear here -->
+                    <div style="text-align: center; padding: 50px; color: #999;">
+                        <i class="fas fa-file-code fa-3x"></i>
+                        <h3>HTML Output will appear here</h3>
+                        <p>Paste your text data and click "Convert to HTML"</p>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="copy-btn" onclick="copyHTML()">
+                        <i class="fas fa-copy"></i> Copy HTML
+                    </button>
+                    <button class="download-btn" onclick="downloadHTML()">
+                        <i class="fas fa-download"></i> Download HTML
+                    </button>
+                </div>
+                
+                <button class="preview-btn" onclick="previewHTML()">
+                    <i class="fas fa-eye"></i> Preview in New Tab
+                </button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><i class="fas fa-bolt"></i> Instant Conversion | <i class="fas fa-shield"></i> Unishield Compatible | <i class="fas fa-sync"></i> One-Click Process</p>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification">Copied to clipboard!</div>
+
+    <script>
+        // Sample data for testing
+        const sampleData = `Unishield
+XOC Summary
+
+
+
+Events Summary
+
+Feature	🌞Daily	🔄Weekly	🌙Monthly	⏱️Quarterly	🗓️Yearly
+📊 Asset & Inventory Management (AIM)	400	4750	21914	63116	200471
+🔒 Endpoint Detection & Response (EDR)	83755	747669	18197845	19323256	19422351
+🛡️ Vulnerabilities & Patching (CVE & CWE)	8406	8406	8406	8406	12466
+📈 Total Statistics Records - Vulnerabilities	444	3863	17021	26282	26282
+📡 Total Monitoring Events - Vulnerabilities	750	6520	28570	30690	30690
+📝 Log File (Syslog) Management (LFM)	3545170	9715304	9735001	9735059	10015513
+🌐 Web Application Firewall (WAF)	0	0	4	72	678
+🚨 Behavior & Anomaoly Detection (NBAD)	0	0	0	0	0
+🌊 Network Flow Management (NFM)	0	0	0	0	0
+🔍 Network Intrusion Detection (NIDS)	0	0	0	0	0
+💓 Bussiness Continuity Management (BCM)	222	1954	8589	475567	475567
+🪟 Windows Auditing Logs Monitoring	33482	120018	120058	120058	120058
+🐧 Linux Auditing & Logs Monitoring	0	0	0	0	0
+⚙️ System Performance Metrics (SPM)	1922494	6917842	6917842	6917842	6917842`;
+
+        // Load sample data when clicked
+        function loadSampleData() {
+            document.getElementById('inputText').value = sampleData;
+            showNotification('Sample data loaded!');
+        }
+
+        // Clear input
+        function clearInput() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputArea').innerHTML = `
+                <div style="text-align: center; padding: 50px; color: #999;">
+                    <i class="fas fa-file-code fa-3x"></i>
+                    <h3>HTML Output will appear here</h3>
+                    <p>Paste your text data and click "Convert to HTML"</p>
+                </div>`;
+            showNotification('Input cleared!');
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Main conversion function
+        function convertToHTML() {
+            const inputText = document.getElementById('inputText').value.trim();
+            
+            if (!inputText) {
+                showNotification('Please paste some data first!');
+                return;
+            }
+            
+            try {
+                const htmlOutput = parseUnishieldData(inputText);
+                document.getElementById('outputArea').innerHTML = htmlOutput;
+                showNotification('HTML Generated Successfully!');
+            } catch (error) {
+                document.getElementById('outputArea').innerHTML = `
+                    <div style="color: #d9534f; padding: 20px;">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Error in Conversion</h3>
+                        <p>${error.message}</p>
+                        <p>Please check your input format and try again.</p>
+                    </div>`;
+                showNotification('Conversion failed! Check format.');
+            }
+        }
+
+        // Parse and convert the data
+        function parseUnishieldData(text) {
+            // This is the core conversion logic
+            // It parses the text and converts it to HTML
+            
+            // Split into lines
+            const lines = text.split('\n').filter(line => line.trim());
+            
+            // Check if it's Unishield data
+            if (!text.includes('Unishield') && !text.includes('XOC Summary')) {
+                throw new Error('Not a valid Unishield report format');
+            }
+            
+            // Start building HTML (simplified version)
+            let html = `
+<div style="max-width: 1200px; margin: 40px auto; padding: 24px; font-family: Arial, sans-serif; background: #ffffff; border: 1px solid #bbb; border-radius: 14px;">
+    <h2 style="text-align: center; color: #d9534f; margin-bottom: 0;">Unishield</h2>
+    <div style="text-align: center; color: #444; font-size: 18px; margin-bottom: 30px;">XOC Summary</div>`;
+            
+            // Parse sections
+            let currentSection = '';
+            let inTable = false;
+            let tableRows = [];
+            
+            for (let line of lines) {
+                // Skip empty lines
+                if (!line.trim()) continue;
+                
+                // Check for section headers
+                if (line.includes('Events Summary')) {
+                    html += '\n<div style="background: #2366a8; color: #ffffff; font-weight: bold; font-size: 18px; padding: 8px 14px; border-radius: 4px;">Events Summary</div>';
+                    html += '\n<table style="width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px;">';
+                    html += '\n<tbody>';
+                    // Add table headers based on your format
+                    html += '\n<tr style="background: #f4f6f8; font-weight: bold;">';
+                    html += '<th style="border: 1px solid #cfcfcf; padding: 8px; text-align: left;">Feature</th>';
+                    html += '<th style="border: 1px solid #cfcfcf; text-align: center;">🌞 Daily</th>';
+                    html += '<th style="border: 1px solid #cfcfcf; text-align: center;">🔄 Weekly</th>';
+                    html += '<th style="border: 1px solid #cfcfcf; text-align: center;">🌙 Monthly</th>';
+                    html += '<th style="border: 1px solid #cfcfcf; text-align: center;">⏱️ Quarterly</th>';
+                    html += '<th style="border: 1px solid #cfcfcf; text-align: center;">🗓️ Yearly</th>';
+                    html += '</tr>';
+                    
+                    // Parse table data
+                    // This is simplified - actual parsing would be more complex
+                    const tableLines = text.split('\n').filter(l => l.includes('📊') || l.includes('🔒') || l.includes('🛡️'));
+                    for (let tableLine of tableLines) {
+                        const parts = tableLine.split('\t');
+                        if (parts.length >= 6) {
+                            html += '\n<tr>';
+                            html += `<td style="border: 1px solid #cfcfcf; padding: 8px;">${parts[0]}</td>`;
+                            for (let i = 1; i <= 5; i++) {
+                                html += `<td style="border: 1px solid #cfcfcf; text-align: center;">${parts[i] || '0'}</td>`;
+                            }
+                            html += '</tr>';
+                        }
+                    }
+                    
+                    html += '\n</tbody></table>';
+                }
+            }
+            
+            html += '\n<!-- More sections would be added here based on parsing -->';
+            html += '\n<div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid #ddd; text-align: center;">';
+            html += '\n<strong>🛠️ Support</strong> | <strong>🔐 Privacy Policy</strong> | <strong>📃 Terms of Service</strong> | <strong>📜 EULA</strong>';
+            html += '\n<p style="margin-top: 10px; color: #666;">&nbsp;&copy; 2026 xIoTz Private Limited. All Rights Reserved</p>';
+            html += '\n</div>';
+            html += '\n</div>';
+            
+            return html;
+        }
+
+        // Copy HTML to clipboard
+        function copyHTML() {
+            const outputArea = document.getElementById('outputArea');
+            const htmlContent = outputArea.innerHTML;
+            
+            // Create temporary textarea for copying
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = htmlContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+            
+            showNotification('HTML copied to clipboard!');
+        }
+
+        // Download HTML file
+        function downloadHTML() {
+            const outputArea = document.getElementById('outputArea');
+            const htmlContent = outputArea.innerHTML;
+            
+            if (!htmlContent || htmlContent.includes('HTML Output will appear')) {
+                showNotification('No HTML to download! Convert first.');
+                return;
+            }
+            
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Unishield_Report_' + new Date().toISOString().split('T')[0] + '.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('HTML file downloaded!');
+        }
+
+        // Preview in new tab
+        function previewHTML() {
+            const outputArea = document.getElementById('outputArea');
+            const htmlContent = outputArea.innerHTML;
+            
+            if (!htmlContent || htmlContent.includes('HTML Output will appear')) {
+                showNotification('No HTML to preview! Convert first.');
+                return;
+            }
+            
+            const newWindow = window.open();
+            newWindow.document.write(htmlContent);
+            newWindow.document.close();
+        }
+    </script>
+</body>
+</html>
