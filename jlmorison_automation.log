@@ -1,0 +1,26 @@
+2026-03-14 09:37:53,586 - INFO - 
+============================================================
+2026-03-14 09:37:53,586 - INFO - STARTING AUTOMATION SEQUENCE
+2026-03-14 09:37:53,587 - INFO - ============================================================
+2026-03-14 09:37:53,587 - INFO - Setting up Chrome browser...
+2026-03-14 09:37:53,587 - INFO - Using existing profile: E:\Business client project\jlmorison_profile
+2026-03-14 09:37:53,587 - INFO - ====== WebDriver manager ======
+2026-03-14 09:37:55,034 - INFO - Get LATEST chromedriver version for google-chrome
+2026-03-14 09:37:55,220 - INFO - Get LATEST chromedriver version for google-chrome
+2026-03-14 09:37:55,299 - INFO - Driver [C:\Users\gopal\.wdm\drivers\chromedriver\win64\145.0.7632.117\chromedriver-win32/THIRD_PARTY_NOTICES.chromedriver] found in cache
+2026-03-14 09:37:55,300 - INFO - Driver installed at: C:\Users\gopal\.wdm\drivers\chromedriver\win64\145.0.7632.117\chromedriver-win32/THIRD_PARTY_NOTICES.chromedriver
+2026-03-14 09:37:55,424 - ERROR - Browser setup failed: [WinError 193] %1 is not a valid Win32 application
+2026-03-14 09:37:55,424 - ERROR - Fatal error: [WinError 193] %1 is not a valid Win32 application
+2026-03-14 09:38:05,134 - INFO - 
+============================================================
+2026-03-14 09:38:05,134 - INFO - STARTING AUTOMATION SEQUENCE
+2026-03-14 09:38:05,134 - INFO - ============================================================
+2026-03-14 09:38:05,134 - INFO - Setting up Chrome browser...
+2026-03-14 09:38:05,134 - INFO - Using existing profile: E:\Business client project\jlmorison_profile
+2026-03-14 09:38:05,136 - INFO - ====== WebDriver manager ======
+2026-03-14 09:38:06,254 - INFO - Get LATEST chromedriver version for google-chrome
+2026-03-14 09:38:06,720 - INFO - Get LATEST chromedriver version for google-chrome
+2026-03-14 09:38:07,201 - INFO - Driver [C:\Users\gopal\.wdm\drivers\chromedriver\win64\145.0.7632.117\chromedriver-win32/THIRD_PARTY_NOTICES.chromedriver] found in cache
+2026-03-14 09:38:07,201 - INFO - Driver installed at: C:\Users\gopal\.wdm\drivers\chromedriver\win64\145.0.7632.117\chromedriver-win32/THIRD_PARTY_NOTICES.chromedriver
+2026-03-14 09:38:07,207 - ERROR - Browser setup failed: [WinError 193] %1 is not a valid Win32 application
+2026-03-14 09:38:07,208 - ERROR - Fatal error: [WinError 193] %1 is not a valid Win32 application
