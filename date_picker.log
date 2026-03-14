@@ -1,0 +1,7 @@
+2026-03-14 09:20:33,964 - INFO - Setting up browser...
+2026-03-14 09:20:33,965 - INFO - Using profile: E:\Business client project\jlmorison_profile
+2026-03-14 09:20:34,063 - INFO - ====== WebDriver manager ======
+2026-03-14 09:20:35,045 - INFO - Get LATEST chromedriver version for google-chrome
+2026-03-14 09:20:35,416 - INFO - Get LATEST chromedriver version for google-chrome
+2026-03-14 09:20:35,488 - INFO - Driver [C:\Users\gopal\.wdm\drivers\chromedriver\win64\145.0.7632.117\chromedriver-win32/THIRD_PARTY_NOTICES.chromedriver] found in cache
+2026-03-14 09:20:35,509 - ERROR - Fatal error: [WinError 193] %1 is not a valid Win32 application
